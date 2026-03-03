@@ -34,6 +34,7 @@ pip install -r requirements.txt
 | `lightgbm` | 4.3 | Alternative gradient-boosted regression (`LGBMRegressor`) |
 | `shap` | 0.45 | SHAP explainability (`TreeExplainer`, summary plots) |
 | `graphviz` | 0.20 | Exporting and rendering decision-tree graphs to PNG |
+| `safeaipackage` | latest | S.A.F.E. AI risk metrics: `rga` (accuracy), `compute_rge_values` (explainability), `compute_rgr_values` (robustness), `compute_rga_parity` (fairness) |
 
 ---
 

@@ -10,3 +10,4 @@ xgboost>=2.0
 lightgbm>=4.3
 shap>=0.45
 graphviz>=0.20
+safeaipackage
