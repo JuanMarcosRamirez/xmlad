@@ -8,6 +8,7 @@ Exports convenience names so modules in this folder can be imported from the pro
 
 """
 
-from .preprocessing_functions import vif_prune, compute_vif_from_corr, bic_grid, best_gmm_by_bic
+from .preprocessing_functions import vif_prune, compute_vif_from_corr, bic_grid, best_gmm_by_bic, compute_stat_summary
+from .plot_functions import plot_bic_and_clusters, plot_feature_scatter
 
-__all__ = ["vif_prune", "compute_vif_from_corr", "bic_grid", "best_gmm_by_bic"]
+__all__ = ["vif_prune", "compute_vif_from_corr", "bic_grid", "best_gmm_by_bic", "plot_bic_and_clusters", "plot_feature_scatter", "compute_stat_summary"]

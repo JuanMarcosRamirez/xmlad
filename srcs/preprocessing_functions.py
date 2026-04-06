@@ -69,37 +69,69 @@ def best_gmm_by_bic(x: np.ndarray, k: int, seeds: np.ndarray) -> mixture.Gaussia
     assert best is not None
     return best
 
-
-import numpy as np
-import pandas as pd
-
 def compute_stat_summary(df: pd.DataFrame) -> pd.DataFrame:
-    summary = pd.DataFrame(index=[
-        "min",
-        "q1",
-        "median",
-        "q3",
-        "max",
-        "mean",
-        "variance",
-        "std_dev",
-        "coef_variation",
-        "range",
-        "mad"
-    ], columns=df.columns, dtype=float)
+    """
+    Compute a statistical summary for each column in a DataFrame.
+
+    Rows:
+        min, q1, median, q3, max, mean, variance, std_dev,
+        coef_variation, range, mad, skewness, kurtosis
+
+    Notes:
+    - NaN values are ignored.
+    - Variance and standard deviation use population formulas (ddof=0).
+    - Kurtosis is excess kurtosis:
+        0 for a normal distribution,
+        >0 for heavier tails,
+        <0 for lighter tails.
+    """
+    summary = pd.DataFrame(
+        index=[
+            "min",
+            "q1",
+            "median",
+            "q3",
+            "max",
+            "mean",
+            "variance",
+            "std_dev",
+            "coef_variation",
+            "range",
+            "mad",
+            "skewness",
+            "kurtosis",
+        ],
+        columns=df.columns,
+        dtype=float,
+    )
 
     for col in df.columns:
-        x = df[col].to_numpy()
+        x = pd.to_numeric(df[col], errors="coerce").dropna().to_numpy()
+
+        if x.size == 0:
+            summary.loc[:, col] = np.nan
+            continue
 
         q1 = np.percentile(x, 25)
         median = np.median(x)
         q3 = np.percentile(x, 75)
 
         mean = np.mean(x)
-        var = np.var(x)
-        std = np.std(x)
-
+        var = np.var(x, ddof=0)
+        std = np.std(x, ddof=0)
         mad = np.median(np.abs(x - median))
+        x_range = np.max(x) - np.min(x)
+
+        # Standardized moments
+        if std == 0:
+            skewness = 0.0
+            kurtosis = 0.0
+        else:
+            z = (x - mean) / std
+            skewness = np.mean(z**3)
+            kurtosis = np.mean(z**4) - 3.0  # excess kurtosis
+
+        coef_variation = std / mean if mean != 0 else np.nan
 
         summary.loc[:, col] = [
             np.min(x),
@@ -110,9 +142,11 @@ def compute_stat_summary(df: pd.DataFrame) -> pd.DataFrame:
             mean,
             var,
             std,
-            std / mean if mean != 0 else np.nan,
-            np.max(x) - np.min(x),
-            mad
+            coef_variation,
+            x_range,
+            mad,
+            skewness,
+            kurtosis,
         ]
 
     return summary
