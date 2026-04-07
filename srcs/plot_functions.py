@@ -49,10 +49,10 @@ def plot_feature_scatter(out_num: pd.DataFrame, target: str, cols: pd.Index, nco
         nrows = len(cols)//ncols
     else:
         nrows = len(cols)//ncols + 1
-    fig, ax = plt.subplots(nrows, ncols, figsize=(6.00*ncols,3.75*nrows), tight_layout=True)
+    fig, ax = plt.subplots(nrows, ncols, figsize=(4.00*ncols,2.50*nrows), tight_layout=True)
     for ii in range(len(cols)):
         ax[ii//ncols][ii%ncols].plot(out_num[cols[ii]], out_num[target],'o', color='tab:red')
-        ax[ii//ncols][ii%ncols].set_xlabel(cols[ii], fontsize=18)
-        ax[ii//ncols][ii%ncols].set_ylabel('KPI (kbps)', fontsize=18)
+        ax[ii//ncols][ii%ncols].set_xlabel(cols[ii])
+        ax[ii//ncols][ii%ncols].set_ylabel('KPI (kbps)')
     fig.tight_layout()
     plt.show()
