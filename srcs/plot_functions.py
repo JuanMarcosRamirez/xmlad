@@ -33,7 +33,7 @@ def plot_bic_and_clusters(bic_ite: np.ndarray,
 
     for i in range(len(np.unique(clusters))):
         ax[1].scatter(x[clusters == i], np.zeros(len(x[clusters == i])), s=100)
-    ax[1].set_xlabel('Correlation Factors', fontsize=14)
+    ax[1].set_xlabel('1 - |corr|', fontsize=14)
     # ax[1].title('(b)', fontsize=16)
     ax[1].tick_params(axis='x', labelsize=12)
     ax[1].tick_params(axis='y', labelsize=12)
@@ -44,14 +44,14 @@ def plot_bic_and_clusters(bic_ite: np.ndarray,
 
 
 
-def plot_feature_scatter(out_num: pd.DataFrame, target: str, cols: pd.Index, ncols: int = 5) -> None:
+def plot_feature_scatter(out_num: pd.DataFrame, kpi_aux: np.ndarray, cols: pd.Index, ncols: int = 5) -> None:
     if (len(cols)%ncols) == 0 :
         nrows = len(cols)//ncols
     else:
         nrows = len(cols)//ncols + 1
     fig, ax = plt.subplots(nrows, ncols, figsize=(4.00*ncols,2.50*nrows), tight_layout=True)
     for ii in range(len(cols)):
-        ax[ii//ncols][ii%ncols].plot(out_num[cols[ii]], out_num[target],'o', color='tab:red')
+        ax[ii//ncols][ii%ncols].plot(out_num[cols[ii]], kpi_aux, 'o', color='tab:red')
         ax[ii//ncols][ii%ncols].set_xlabel(cols[ii])
         ax[ii//ncols][ii%ncols].set_ylabel('KPI (kbps)')
     fig.tight_layout()

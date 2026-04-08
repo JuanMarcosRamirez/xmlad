@@ -1,38 +1,55 @@
 import numpy as np
 import pandas as pd
 from sklearn import mixture
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-def compute_vif_from_corr(X: pd.DataFrame) -> pd.Series:
-    """Compute VIF using the inverse of the correlation matrix.
-
-    Faster than regressing each feature against all others.
-    Uses pseudo-inverse for numerical stability.
+def compute_vif(X: pd.DataFrame | np.ndarray) -> pd.Series:
     """
+    Compute VIF values exactly as statsmodels'
+    variance_inflation_factor(exog, i) applied column-by-column.
 
-    if X.shape[1] == 0:
-        return pd.Series(dtype=float)
+    Parameters
+    ----------
+    X : pd.DataFrame or np.ndarray
+        Design matrix. No constant is added automatically, matching statsmodels.
 
-    # Standardize features (improves numerical stability)
-    Xs = (X - X.mean(axis=0)) / X.std(axis=0, ddof=0).replace(0.0, np.nan)
-    Xs = Xs.fillna(0.0)
+    Returns
+    -------
+    pd.Series
+        VIF values indexed by column name when X is a DataFrame.
+    """
+    if isinstance(X, pd.DataFrame):
+        columns = X.columns
+        exog = X.to_numpy(dtype=float, copy=False)
+    else:
+        exog = np.asarray(X, dtype=float)
+        if exog.ndim != 2:
+            raise ValueError("X must be a 2D array or DataFrame.")
+        columns = pd.RangeIndex(exog.shape[1])
 
-    # Correlation matrix
-    corr = np.corrcoef(Xs.to_numpy(), rowvar=False)
+    if exog.ndim != 2:
+        raise ValueError("X must be a 2D array or DataFrame.")
 
-    # Pseudo-inverse (robust to singular matrices)
-    inv_corr = np.linalg.pinv(corr)
+    if exog.shape[1] == 0:
+        return pd.Series(dtype=float, name="vif")
 
-    # VIF = diagonal of inverse correlation matrix
-    vifs = np.diag(inv_corr)
+    if not np.isfinite(exog).all():
+        raise ValueError("VIF requires finite numeric values. Clean NaN/±inf first.")
 
-    return pd.Series(vifs, index=X.columns, name="vif")
+    vif_values = np.fromiter(
+        (variance_inflation_factor(exog, i) for i in range(exog.shape[1])),
+        dtype=float,
+        count=exog.shape[1],
+    )
+
+    return pd.Series(vif_values, index=columns, name="vif")
 
 
 def vif_prune(X: pd.DataFrame, vif_max: float = 20.0) -> pd.DataFrame:
     """Iteratively remove features with highest VIF."""
     column_dropped = []
     while X.shape[1]:
-        v = compute_vif_from_corr(X)
+        v = compute_vif(X)
         if v.max() <= vif_max:
             break
         X = X.drop(columns=[v.idxmax()])
