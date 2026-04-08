@@ -3,6 +3,12 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 
+from srcs.anmdet import (
+    detect_outliers_iqr,
+    detect_outliers_zscore,
+    detect_outliers_mad,
+)
+
 def plot_bic_and_clusters(bic_ite: np.ndarray, 
                           iterations: int, 
                           max_num_clusters: int, 
@@ -56,3 +62,64 @@ def plot_feature_scatter(out_num: pd.DataFrame, kpi_aux: np.ndarray, cols: pd.In
         ax[ii//ncols][ii%ncols].set_ylabel('KPI (kbps)')
     fig.tight_layout()
     plt.show()
+    
+    # -------------------------------------------------------------------
+# Plot helpers
+# -------------------------------------------------------------------
+def format_axis(ax, xlabel, ylabel, title, tick_fs=8, label_fs=8, title_fs=8):
+    ax.set_xlabel(xlabel, fontsize=label_fs)
+    ax.set_ylabel(ylabel, fontsize=label_fs)
+    ax.set_title(title, fontsize=title_fs)
+    ax.tick_params(axis="both", labelsize=tick_fs)
+    ax.xaxis.get_offset_text().set_fontsize(tick_fs)
+
+def plot_distribution_pair(raw: pd.Series, log_s: pd.Series, bins: int = 25) -> None:
+    fig, axes = plt.subplots(1, 2, figsize=(6, 3), tight_layout=True)
+
+    configs = [
+        (raw.dropna(), "KPI Histogram", "Value", "Frequency", "tab:blue", 10, 8, 8),
+        (log_s.dropna(), "Log10 KPI Histogram", "Value", "Frequency", "tab:orange", 10, 8, 8),
+    ]
+    for ax, (s, title, xlabel, ylabel, color, title_fs, label_fs, tick_fs) in zip(axes, configs):
+        ax.hist(s, bins=bins, color=color, edgecolor="black")
+        format_axis(ax, xlabel, ylabel, title, tick_fs=tick_fs, label_fs=label_fs, title_fs=title_fs)
+    plt.show()
+
+
+DETECTORS = {
+    "IQR": detect_outliers_iqr,
+    "Z-Score": detect_outliers_zscore,
+    "MAD": detect_outliers_mad,
+}
+    
+def plot_outlier_detection(s: pd.Series, xlabel: str, suffix: str = "", bins: int = 25) -> dict[str, pd.Series]:
+    s = s.dropna()
+    fig, axes = plt.subplots(1, 3, figsize=(9, 3), tight_layout=True)
+
+    masks = {}
+    for ax, (name, detector) in zip(axes, DETECTORS.items()):
+        mask = detector(s)
+        masks[name] = mask
+
+        ax.hist(
+            [s[~mask], s[mask]],
+            bins=bins,
+            stacked=True,
+            color=["tab:blue", "tab:orange"],
+            edgecolor="black",
+            label=["Inliers", "Outliers"],
+        )
+        format_axis(
+            ax,
+            xlabel=xlabel,
+            ylabel="Counts",
+            title=f"{name}",
+            tick_fs=8,
+            label_fs=8,
+            title_fs=10,
+        )
+        ax.legend(fontsize=8)
+        ax.autoscale(axis="both", tight=True)
+
+    plt.show()
+    return masks
