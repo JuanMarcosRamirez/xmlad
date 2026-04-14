@@ -123,3 +123,14 @@ def plot_outlier_detection(s: pd.Series, xlabel: str, suffix: str = "", bins: in
 
     plt.show()
     return masks
+
+def plot_pruning(ccp_alphas, scores):
+    fig = plt.figure(dpi=100)
+    ax = fig.add_subplot()
+    plt.plot(ccp_alphas, scores, marker='o', drawstyle="steps-post", color='tab:blue',linewidth=2)
+    plt.xlabel(r"$\alpha$", fontsize=20)
+    plt.ylabel("Accuracy", fontsize=20)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(2.0)  # change width
