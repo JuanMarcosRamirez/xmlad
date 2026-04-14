@@ -64,3 +64,61 @@ xmlad/
 │   └── preprocessing_functions.py
 ├── LICENSE
 └── README.md
+
+## Notebook overview
+
+### `01_preprocessing.ipynb`
+Introduces the preprocessing pipeline:
+- loading and inspecting data,
+- handling missing values and infinities,
+- computing descriptive statistics,
+- feature filtering,
+- multicollinearity control,
+- feature-selection ideas based on correlations and clustering.
+
+### `02_anomaly_detection.ipynb`
+Covers anomaly-detection workflows:
+- rule-based univariate detection,
+- robust covariance methods,
+- One-Class SVM,
+- Isolation Forest,
+- Local Outlier Factor,
+- residual-based modeling and evaluation.
+
+### `03_explainability.ipynb`
+Focuses on interpretable and explainable workflows:
+- learning normal behavior,
+- residual analysis,
+- interpretable model inspection,
+- model-driven reasoning about anomalies.
+
+---
+
+## Datasets
+
+The repository includes both:
+- **telecom-oriented CSV datasets**, and
+- a **`6_cardio` benchmark dataset** used for anomaly-detection experiments.
+
+Use the telecom datasets for domain-focused exercises and the benchmark dataset for quick method comparisons.
+
+---
+
+## Recommended setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/JuanMarcosRamirez/xmlad.git
+cd xmlad
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+
+On Windows
+
+```bash
+.venv\Scripts\activate
