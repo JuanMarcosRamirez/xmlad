@@ -126,3 +126,11 @@ On Windows
 ```bash
 .venv\Scripts\activate
 ```
+
+### 3. Install the core Python stack
+
+A practical environment for this repository is:
+
+```bash
+pip install jupyterlab notebook numpy pandas matplotlib seaborn scikit-learn statsmodels xgboost graphviz
+```
