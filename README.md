@@ -63,7 +63,8 @@ xmlad/
 │   ├── plot_functions.py
 │   └── preprocessing_functions.py
 ├── LICENSE
-└── README.md`
+└── README.md
+```
 
 ## Notebook overview
 
