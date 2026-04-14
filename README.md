@@ -112,14 +112,17 @@ Use the telecom datasets for domain-focused exercises and the benchmark dataset 
 ```bash
 git clone https://github.com/JuanMarcosRamirez/xmlad.git
 cd xmlad
+```
 
 ### 2. Create a virtual environment
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
+```
 
 On Windows
 
 ```bash
 .venv\Scripts\activate
+```
