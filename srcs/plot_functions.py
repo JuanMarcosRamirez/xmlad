@@ -134,3 +134,4 @@ def plot_pruning(ccp_alphas, scores):
     plt.yticks(fontsize=16)
     for axis in ['top', 'bottom', 'left', 'right']:
         ax.spines[axis].set_linewidth(2.0)  # change width
+    plt.show()
